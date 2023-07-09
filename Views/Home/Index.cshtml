@@ -1,0 +1,107 @@
+﻿@using DevExtreme.AspNet.Mvc;
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div id="gridContainer">
+    @( Html.DevExtreme().DataGrid()
+            .ID("gridContainer")
+            .ShowBorders(true)
+            .DataSource((IEnumerable<İnsanKaynaklarıPT.Models.User>)ViewBag.Users)
+            .KeyExpr("ID")
+
+            .Columns(c =>
+            {
+                c.Add().DataField("id")
+                    .Width(30)
+                    .AllowEditing(false)
+                    .Alignment(HorizontalAlignment.Center);
+
+                c.Add().DataField("Ad")
+                .Width(200)
+                .Alignment(HorizontalAlignment.Center);
+
+                c.Add().DataField("Soyad")
+                .Width(200)
+                .Alignment(HorizontalAlignment.Center);
+
+                c.Add().DataField("Email")
+                    .Width(300)
+                    .Alignment(HorizontalAlignment.Center);
+
+                c.Add().DataField("Depart.DepartName")
+                    .Caption("Depart")
+                    .Width(150)
+                    .Alignment(HorizontalAlignment.Center);
+
+                c.Add().DataField("Password")
+                    .Caption("Şifre")
+                    .Width(120)
+                    .Alignment(HorizontalAlignment.Center)
+                    .CellTemplate(@<text>
+                        ************
+                    </text>);
+
+                c.Add().DataField("İsActtive")
+                    .Caption("Durum")
+                    .Width(60);
+            })
+
+            .Editing(editing =>
+            {
+                editing.UseIcons(true);
+                editing.EditColumnName("Düzenle");
+                editing.Mode(GridEditMode.Popup)
+                .AllowAdding(true)
+                .AllowUpdating(true)
+                .Popup(popup => popup
+                .Width(600)
+                .Height(400)
+                .Title("Kullanıcı Bilgileri")
+                .ShowTitle(true)
+                .ToolbarItems(items =>
+                {
+                items.Add().Toolbar(Toolbar.Bottom).Location(ToolbarItemLocation.After)
+                    .Widget(w => w.Button()
+                .Type(ButtonType.Success)
+                .StylingMode(ButtonStylingMode.Outlined)
+                .Text("Kaydet")
+                .OnClick("function() { $('#gridContainer').dxDataGrid('instance').saveEditData(); }")
+                );
+                items.Add().Toolbar(Toolbar.Bottom).Location(ToolbarItemLocation.After)
+                .Widget(w => w.Button()
+                .Type(ButtonType.Danger)
+                .StylingMode(ButtonStylingMode.Outlined)
+                .Text("Vazgeç")
+                .OnClick("function() { $('#gridContainer').dxDataGrid('instance').cancelEditData(); }")
+                );
+                })
+                );
+            })
+            .OnSaved("onSaved")
+)
+</div>
+<script>
+    function onSaved(e) {
+        // Handle the saved event here
+        if (e.changes.length > 0) {
+            var updatedData = e.changes[0].data;
+
+            // Send the updated data to the server using AJAX
+            $.ajax({
+                url: '/Home/UpdateUser',
+                method: 'POST',
+                data: updatedData,
+                success: function (result) {
+                    // Handle the success response
+                    // You can refresh the grid or perform any other necessary actions
+                    grid.refresh();
+                },
+                error: function (xhr, status, error) {
+                    // Handle the error response
+                    // Display an error message or perform any other necessary actions
+                }
+            });
+        }
+    }
+</script>
+

@@ -1,0 +1,81 @@
+﻿@using DevExtreme.AspNet.Mvc;
+
+@{
+    ViewData["Title"] = "CoWorkers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="data-grid-demo">
+    @(Html.DevExtreme().DataGrid<İnsanKaynaklarıPT.Models.Worker>()
+        .ID("gridContainer")
+        .ShowBorders(true)
+        .Paging(p => p.Enabled(false))
+        .Editing(e => e.Mode(GridEditMode.Popup)
+        .AllowUpdating(true)
+        .AllowAdding(true)
+        .AllowDeleting(true)
+        .Popup(p => p
+        .Title("Employee Info")
+        .ShowTitle(true)
+        .Width(700)
+        .Height(525)
+        )
+        .Form(f => f.Items(items =>
+        {
+            items.AddGroup()
+            .ColCount(2)
+            .ColSpan(2)
+            .Items(groupItems =>
+            {
+                groupItems.AddSimpleFor(m => m.WorkerName);
+                groupItems.AddSimpleFor(m => m.WorkerLastName);
+                groupItems.AddSimpleFor(m => m.WorkerAge);
+                groupItems.AddSimpleFor(m => m.WorkerStartDay);
+                groupItems.AddSimpleFor(m => m.DepartId);
+
+            });
+
+            items.AddGroup()
+            .Caption("Home Address")
+            .ColCount(2)
+            .ColSpan(2)
+            .Items(groupItems =>
+            {
+                groupItems.AddSimpleFor(m => m.DepartId);
+                groupItems.AddSimpleFor(m => m.WorkerAdress);
+            });
+        }))
+        )
+        .Columns(columns =>
+        {
+            columns.AddFor(m => m.WorkerId)
+            .Width(70);
+
+            columns.AddFor(m => m.WorkerName);
+
+            columns.AddFor(m => m.WorkerLastName);
+
+            columns.AddFor(m => m.WorkerAge);
+
+            columns.AddFor(m => m.WorkerStartDay)
+            .Width(170);
+
+            columns.AddFor(m => m.DepartId)
+            .Width(125)
+            .Lookup(lookup => lookup
+            .DataSource(d => d.WebApi()
+            .Controller("CoWorkerListController1")
+            .LoadAction("Get")
+            .Key("DepartId")
+            )
+            .DisplayExpr("DepartName")
+            .ValueExpr("DepartId")
+            );
+
+            columns.AddFor(m => m.WorkerAdress)
+            .Visible(false);
+        })
+        )
+</div>
+
+

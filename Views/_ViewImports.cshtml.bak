@@ -1,0 +1,3 @@
+﻿@using İnsanKaynaklarıPT
+@using İnsanKaynaklarıPT.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
